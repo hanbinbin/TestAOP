@@ -316,6 +316,7 @@ public class ASMTransform extends Transform {
             e.printStackTrace();
         }
     }
+
     private byte[] modifyClass(byte[] classBytes) {
         ClassReader classReader = new ClassReader(classBytes);
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
