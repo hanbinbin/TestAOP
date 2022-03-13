@@ -1,0 +1,16 @@
+应用名称            应用标识                        应用版本     发起下载数    下载成功数       成功率(%)
+
+
+货运司机    com.lalamove.huolala.driver            6.1.57        59382         53796        90.6
+
+货运司机    com.lalamove.huolala.driver            6.1.21        51537         39422        76
+                            
+
+小拉司机     com.xiaolachuxing.driver              1.0.28         4921         2194         45
+
+小拉司机     com.xiaolachuxing.driver              1.0.30         6782         5667         84.4
+
+  
+小拉用户     com.xiaolachuxing.user                1.2.3          15042         7858        52.2
+            
+小拉用户     com.xiaolachuxing.user                1.2.4          7427          3677        49.5

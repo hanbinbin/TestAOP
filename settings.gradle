@@ -1,0 +1,6 @@
+include ':asm-plugin'
+include ':apt-api'
+include ':apt-compiler'
+include ':apt-annotion'
+include ':app'
+rootProject.name = "MyTestApplication"

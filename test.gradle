@@ -1,0 +1,19 @@
+task testFile {
+    testFile()
+}
+
+def testFile() {
+    def path = "${project.rootDir}/test/"
+    File file = new File(path + "test_file")
+    if (!file.exists()) {
+        file.createNewFile()
+    }
+    BufferedWriter writer = file.newWriter("UTF-8")
+    writer.write("123456")
+    writer.write("\n")
+    writer.write("0987")
+    writer.write("\n")
+    writer.write("0987654321")
+    writer.flush()
+    writer.close()
+}
