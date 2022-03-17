@@ -208,7 +208,7 @@ public class ASMTransform extends Transform {
                         //2.ClassWriter.COMPUTE_FRAMES
                         //不仅会计算上述操作数栈和局部变量表的大小 还会自动计算StackMapFrames
                         ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-                        ClassVisitor classVisitor = new OnClickClassVisitor(classWriter);
+                        ClassVisitor classVisitor = new OnClickClassVisitor(classWriter);//其实 ClassWriter 也是 ClassVisitor 的实现类，我们只是通过 OnClickClassVisitor 代理了 ClassWriter 而已。
                         // 1.ClassReader.EXPAND_FRAMES : 展开 StackMapTable 属性; 2.ClassReader.SKIP_DEBUG : 跳过类文件中的调试信息，比如行号(LineNumberTable)等
                         // 3.ClassReader.SKIP_CODE : 跳过方法体中的code属性 （方法字节码，异常表等等）4.ClassReader.SKIP_FRAMES : 跳过 StackMapTable 属性
                         classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
