@@ -3,6 +3,10 @@ package cn.huolala.mytestapplication.utils
 import cn.huolala.mytestapplication.utils.GZipUtil.uncompress
 import okio.Buffer
 import okio.GzipSink
+<<<<<<< HEAD
+=======
+import okio.sink
+>>>>>>> 5551c44 (项目测试代码)
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
@@ -16,10 +20,9 @@ object GzipSinkTest {
 
     fun test() {
         val gzipOutput = ByteArrayOutputStream()
-        gzipOutput.write("34125y4352362423".toByteArray())
         val encodedBuffer = Buffer()
-        encodedBuffer.write(gzipOutput.toByteArray())
-        GzipSink(encodedBuffer).use { it.write(encodedBuffer, encodedBuffer.size()) }
+        encodedBuffer.write("34125y4352362423".toByteArray())
+        GzipSink(gzipOutput.sink()).use { it.write(encodedBuffer, encodedBuffer.size) }
         //先算出魔术数
         val byteArrayInputStream = ByteArrayInputStream(gzipOutput.toByteArray())
         GzipMagic.getMagic(byteArrayInputStream)

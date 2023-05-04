@@ -56,7 +56,10 @@ import cn.huolala.mytestapplication.thread.ThreadUtils;
 import cn.huolala.mytestapplication.threadpool.WPFThreadPool;
 import cn.huolala.mytestapplication.utils.TelephoneNumberUtils;
 import cn.huolala.mytestapplication.utils.Utils;
+<<<<<<< HEAD
 import cn.huolala.mytestapplication.utils.WPFTraceIdUtils;
+=======
+>>>>>>> 5551c44 (项目测试代码)
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.EventListener;
