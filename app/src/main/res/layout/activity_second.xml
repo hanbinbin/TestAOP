@@ -1,56 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/output"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:background="@color/purple_200"
-        android:gravity="center"
-        android:text="写入数据"
-        app:layout_constraintBottom_toTopOf="@id/input"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/input"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:background="@color/purple_200"
-        android:gravity="center"
-        android:text="读取数据"
-        app:layout_constraintBottom_toTopOf="@id/telephone_recognize"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/output" />
-
-    <TextView
-        android:id="@+id/telephone_recognize"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="电话号码识别"
-        app:layout_constraintBottom_toTopOf="@id/chain"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/chain"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:background="@color/purple_200"
-        android:gravity="center"
-        android:text="责任链模式"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/telephone_recognize" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/output"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="写入数据"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="读取数据"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/telephone_recognize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="电话号码识别"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/chain"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="责任链模式"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/test_argus"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="test argus"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/utc_to_beijing"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="utc translate to beijing"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/jump_to_third"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="跳转到第三个activity"
+                android:textColor="@color/white" />
+
+
+            <TextView
+                android:id="@+id/test_object_lock"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="测试object lock, wait, notify"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/test_link_list"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="测试 linkList push pop peek"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/get_current_memory"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="获取当前memory"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/test_textView_requestLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="test textView requestLayout"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/test_m1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@color/cardview_dark_background"
+                    android:gravity="center"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="创建对象"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/test_m2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@color/cardview_dark_background"
+                    android:gravity="center"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
+                    android:text="添加调用栈"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/test_reference"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="test reference"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/test_synchronized"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="test synchronized"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/test_write_to_sdCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="test write to sd card"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,8 +1,21 @@
 package cn.huolala.asm_plugin.transform;
 
-import com.android.build.api.transform.*;
+import com.android.build.api.transform.DirectoryInput;
+import com.android.build.api.transform.Format;
+import com.android.build.api.transform.JarInput;
+import com.android.build.api.transform.QualifiedContent;
+import com.android.build.api.transform.Transform;
+import com.android.build.api.transform.TransformException;
+import com.android.build.api.transform.TransformInput;
+import com.android.build.api.transform.TransformInvocation;
+import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.android.utils.FileUtils;
+
+import org.apache.commons.compress.utils.IOUtils;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,15 +27,10 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
+import cn.huolala.asm_plugin.OnClickClassLambdaVisitor;
 import cn.huolala.asm_plugin.OnClickClassVisitor;
-
-import org.apache.commons.compress.utils.IOUtils;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 
 /**
  * Author by binbinhan,
@@ -41,6 +49,8 @@ public class ASMTransform extends Transform {
 
     /**
      * 输入类型
+     * <p>
+     * <p>
      * - QualifiedContent.DefaultContentType.RESOURCES
      * 资源文件
      * - QualifiedContent.DefaultContentType.CLASSES
@@ -57,6 +67,8 @@ public class ASMTransform extends Transform {
 
     /**
      * 作用范围
+     *
+     *
      * <p>
      * - QualifiedContent.Scope.PROJECT
      * 只作用于project本身内容
@@ -168,7 +180,7 @@ public class ASMTransform extends Transform {
             return;
         }
         outputProvider.deleteAll();
-        // 遍历所有输入文件
+        // 遍历所有输入文件，查找点击事件
         for (TransformInput transformInput : inputs) {
             // 遍历所有文件夹
             for (DirectoryInput directoryInput : transformInput.getDirectoryInputs()) {
@@ -207,8 +219,8 @@ public class ASMTransform extends Transform {
                         //触发参数可以随便写
                         //2.ClassWriter.COMPUTE_FRAMES
                         //不仅会计算上述操作数栈和局部变量表的大小 还会自动计算StackMapFrames
-                        ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-                        ClassVisitor classVisitor = new OnClickClassVisitor(classWriter);//其实 ClassWriter 也是 ClassVisitor 的实现类，我们只是通过 OnClickClassVisitor 代理了 ClassWriter 而已。
+                        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                        ClassVisitor classVisitor = new OnClickClassVisitor(new OnClickClassLambdaVisitor(classWriter));//其实 ClassWriter 也是 ClassVisitor 的实现类，我们只是通过 OnClickClassVisitor 代理了 ClassWriter 而已。
                         // 1.ClassReader.EXPAND_FRAMES : 展开 StackMapTable 属性; 2.ClassReader.SKIP_DEBUG : 跳过类文件中的调试信息，比如行号(LineNumberTable)等
                         // 3.ClassReader.SKIP_CODE : 跳过方法体中的code属性 （方法字节码，异常表等等）4.ClassReader.SKIP_FRAMES : 跳过 StackMapTable 属性
                         classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
@@ -262,7 +274,7 @@ public class ASMTransform extends Transform {
 //                outputJarStream.putNextEntry(outputJarEntry);//表示将该entry写入jar文件中 也就是创建该文件夹和文件
 //                if (!inputJarEntry.isDirectory() && entryName.endsWith(".class")) {
 //                    ClassReader classReader = new ClassReader(inputJarStream);
-//                    ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
+//                    ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 //                    ClassVisitor classVisitor = new OnClickClassVisitor(classWriter);
 //                    classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
 //                    outputJarStream.write(classWriter.toByteArray());
@@ -319,10 +331,9 @@ public class ASMTransform extends Transform {
 
     private byte[] modifyClass(byte[] classBytes) {
         ClassReader classReader = new ClassReader(classBytes);
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        ClassVisitor classVisitor = new OnClickClassVisitor(classWriter);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassVisitor classVisitor = new OnClickClassVisitor(new OnClickClassLambdaVisitor(classWriter));
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         return classWriter.toByteArray();
     }
-
 }

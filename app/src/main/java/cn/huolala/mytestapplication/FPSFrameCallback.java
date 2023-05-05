@@ -1,16 +1,19 @@
 package cn.huolala.mytestapplication;
 
 import android.content.Context;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Choreographer;
 import android.view.Display;
 import android.view.WindowManager;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import cn.huolala.mytestapplication.bean.FPSConfig;
+import cn.huolala.mytestapplication.bean.TraceInfo;
 import cn.huolala.mytestapplication.utils.Calculation;
 
 /**
@@ -91,7 +94,26 @@ public class FPSFrameCallback implements Choreographer.FrameCallback {
      * @return
      */
     private boolean isFinishedWithSample(long frameTimeNanos) {
+        getThreadStackTrace();
         return (frameTimeNanos - startSampleTimeInNs) > fpsConfig.getSampleTimeInNs();
+    }
+
+    /**
+     * 获取堆栈信息
+     */
+    private void getThreadStackTrace() {
+        if (dataSet.size() <= 1) {
+            return;
+        }
+        long timeInNS = dataSet.get(dataSet.size() - 1) - dataSet.get(dataSet.size() - 2);
+        long timeInMI = TimeUnit.MILLISECONDS.convert(timeInNS, TimeUnit.NANOSECONDS);
+        if ((timeInMI - fpsConfig.deviceRefreshRateInMs) < fpsConfig.freezeTime) {
+            return;
+        }
+        //开始获取冻帧的堆栈信息
+        Log.e("forzen", "start:" + dataSet.get(dataSet.size() - 2)
+                + "     end:" + dataSet.get(dataSet.size() - 1)
+                + "     timeInNS:" + timeInNS);
     }
 
     /**
@@ -99,9 +121,29 @@ public class FPSFrameCallback implements Choreographer.FrameCallback {
      */
     private void calculate(List<Long> dataSetCopy) {
         long timeInNS = dataSetCopy.get(dataSetCopy.size() - 1) - dataSetCopy.get(0);
-        Log.e(TAG, "time = " + TimeUnit.MILLISECONDS.convert(timeInNS, TimeUnit.NANOSECONDS));
+        long timeInMI = TimeUnit.MILLISECONDS.convert(timeInNS, TimeUnit.NANOSECONDS);
         List<Integer> droppedSet = Calculation.getDroppedSet(fpsConfig, dataSetCopy);
+        //获取fps
         long fps = Calculation.calculateMetric(fpsConfig, dataSetCopy, droppedSet);
-        Log.e(TAG, "fps = " + fps);
+        //获取drop3  drop7  freeze
+        int drop3 = 0;
+        int drop7 = 0;
+        int freeze = 0;
+        for (Integer k : droppedSet) {
+            if ((k - 1) >= 3 && (k - 1) < 7) {
+                drop3++;
+                continue;
+            }
+            if ((k - 1) >= 7) {
+                drop7++;
+                if ((k - 1) >= (fpsConfig.freezeTime / fpsConfig.deviceRefreshRateInMs)) {
+                    freeze++;
+                }
+            }
+        }
+        dataSetCopy.clear();
+        droppedSet.clear();
+        TraceInfo traceInfo = new TraceInfo((int) timeInMI, (int) fps, drop3, drop7, freeze);
+        Log.e(TAG, "traceInfo = " + traceInfo);
     }
 }

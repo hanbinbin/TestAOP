@@ -9,11 +9,11 @@ def testFile() {
         file.createNewFile()
     }
     BufferedWriter writer = file.newWriter("UTF-8")
-    writer.write("123456")
+    writer.write("123456789")
     writer.write("\n")
-    writer.write("0987")
+    writer.write("098767899")
     writer.write("\n")
-    writer.write("0987654321")
+    writer.write("0987654321678900988")
     writer.flush()
     writer.close()
 }

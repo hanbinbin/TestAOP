@@ -4,3 +4,15 @@ include ':apt-compiler'
 include ':apt-annotion'
 include ':app'
 rootProject.name = "MyTestApplication"
+include ':test-c'
+include ':mylibrary'
+
+//导入别的目录下的模块
+//method 1
+include ':module:a-module' //relative path:module_name;  在别的模块也需要按同样的模式引入该模块 implementation project(':module:a-module')
+//method 2
+include ':b-module' //project(":b-module").projectDir = new File("module/b-module")
+project(":b-module").projectDir = new File("module/b-module")
+//method 3
+include ':c-module' //project(":demo").projectDir=new File(rootDir,"demo")
+project(":c-module").projectDir = new File(rootDir, "module/c-module")

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>cn.huolala.asm_plugin</groupId>
+  <artifactId>asm</artifactId>
+  <version>1.1.4-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20230113.064414</timestamp>
+      <buildNumber>2</buildNumber>
+    </snapshot>
+    <lastUpdated>20230113064414</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.1.4-20230113.064414-2</value>
+        <updated>20230113064414</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.1.4-20230113.064414-2</value>
+        <updated>20230113064414</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

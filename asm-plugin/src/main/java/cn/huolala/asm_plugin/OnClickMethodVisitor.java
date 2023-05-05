@@ -12,7 +12,7 @@ import org.objectweb.asm.Opcodes;
 public class OnClickMethodVisitor extends MethodVisitor implements Opcodes {
 
     public OnClickMethodVisitor(MethodVisitor methodVisitor) {
-        super(Opcodes.ASM9, methodVisitor);
+        super(ASM9, methodVisitor);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cn.huolala.mytestapplication.bean;
 
+import android.util.Log;
+
 /**
  * Author by binbinhan,
  * Email binbin.han@huolala.cn,
@@ -14,6 +16,7 @@ public class UserInfo {
     private String address;
 
     public String getName() {
+        Log.i("ASM", "hello");
         return name;
     }
 

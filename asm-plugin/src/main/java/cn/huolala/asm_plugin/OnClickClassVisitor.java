@@ -57,6 +57,7 @@ public class OnClickClassVisitor extends ClassVisitor implements Opcodes {
      */
     @Override
     public void visitEnd() {
+
 //        // 如果该类是Fragment子类，且没有重写onResume方法，那么就添加一个onResume方法
 //        if (mIsFragmentClass && !mHasResumeMethod) {
 //            // 生成方法 public void onResume()

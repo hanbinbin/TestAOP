@@ -1,12 +1,12 @@
 package cn.huolala.mytestapplication
 
-import androidx.test.platform.app.InstrumentationRegistry
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
+import java.util.zip.GZIPOutputStream
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -20,5 +20,12 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("cn.huolala.mytestapplication", appContext.packageName)
+    }
+
+    @Test
+    fun testMagic() {
+        val GZIP_MAGIC = 0x8b1f
+        Log.e("testMagic", "" + GZIP_MAGIC.toByte())
+        Log.e("testMagic", "" + (GZIP_MAGIC shr 8).toByte())
     }
 }

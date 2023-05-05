@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/test_get_stack_reason"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="截取获取堆栈准确信息"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/read_content_from_server"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="read Content From Server"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_match_is_system_tag"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="Test Match Is System Tag"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_iterator"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="Test Iterator"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_magic"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="Test gzip magic"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_java_heap_oom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="test java heap oom"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_native_heap_oom1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="test native heap oom1"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/test_native_heap_oom2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:text="test native heap oom2"
+        android:textColor="@color/white" />
+</LinearLayout>

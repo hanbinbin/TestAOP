@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
  * PS: Not easy to write code, please indicate.
  */
 public class FPSConfig implements Serializable {
+    public final float freezeTime = 700; //冻帧时间 ms
     public float refreshRate = 60; //60fps
     public float deviceRefreshRateInMs = 16.6f; //value from device ex 16.6 ms
     // making final for now.....want to be solid on the math before we allow an
@@ -20,7 +21,7 @@ public class FPSConfig implements Serializable {
         return TimeUnit.NANOSECONDS.convert(sampleTimeInMs, TimeUnit.MILLISECONDS);
     }
 
-    public FPSConfig(){
+    public FPSConfig() {
 
     }
 }

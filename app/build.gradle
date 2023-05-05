@@ -1,17 +1,20 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'cn-huolala-asm-plugin'
+//    id 'argus-auto-track-plugin'
+//    id 'cn-huolala-asm-plugin'
 }
+println "app build.gradle start"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion "30.0.3"
+    ndkVersion "21.1.6352462"
 
     defaultConfig {
         applicationId "cn.huolala.mytestapplication"
-        minSdkVersion 16
-        targetSdkVersion 30
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -43,8 +46,81 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api 'com.squareup.okhttp3:okhttp:3.12.0'
 
     implementation project(path: ':apt-annotion') //用于编写注解
     annotationProcessor project(path: ":apt-compiler") //用于处理注解，例如生成一些类
     implementation project(path: ":apt-api") //用于api的封装
+
+//    implementation "com.delivery.wp.argus.android:argus:$argus_version"
+//    implementation "com.delivery.wp:foundation:$foundation_version"
+
+    implementation project(path: ':test-c') //用于编写c的测试代码的
+    implementation project(':mylibrary') //用于测试 model
+    implementation project(':module:a-module')
+    implementation project(':b-module')
+    implementation project(':c-module')
+    //火山引擎--apm性能组件
+    implementation 'com.volcengine:apm_insight:1.4.10.cn-rc.0'
+    //火山引擎--apm稳定性组件
+    implementation 'com.volcengine:apm_insight_crash:1.4.6-rc.17'
 }
+
+project.afterEvaluate {
+    println "========app project.afterEvaluate start========"
+//    project.tasks.all { task ->
+//        println "task name = " + task.getName()
+//        println "get project name from task = " + task.getProject().getName()
+//    }
+//    project.plugins
+//    project.extensions
+
+    println "project name = " + project.getName()
+    println "project path = " + project.getPath()
+    println "project dir = " + project.getProjectDir()
+    println "project build.gradle dir = " + project.file("build.gradle")
+    println "rootProject build.gradle dir = " + rootProject.file("build.gradle")
+    println "rootProject name = " + rootProject.getName()
+    println "get rootProject name by project = " + project.getRootProject().getName()
+    println "get rootDir name by project= " + project.getRootDir()
+
+    def childProjects1 = rootProject.getChildProjects()
+    childProjects1.each {
+        println "rootProject contain key=${it.key},value=${it.value}"
+    }
+
+    childProjects.each {
+        println "app contain key=${it.key},value=${it.value} "
+    }
+
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.findProperty("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.property("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${findProperty("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${property("NEXUS_USERNAME")}"
+    println "has property NEXUS_PASSWORD = ${project.hasProperty('NEXUS_PASSWORD')}, result = ${getProperty("NEXUS_PASSWORD")}"
+
+//    properties.each {
+//        println "properties key=${it.key},value=${it.value}"
+//    }
+
+    project.android.applicationVariants.all { variant ->
+        println "getApplicationId = " + variant.getApplicationId()
+        println "name = " + variant.getName()
+        println "baseName = " + variant.getBaseName()
+        println "description = " + variant.getDescription()
+        println "dirName = " + variant.getDirName()
+        println "getFlavorName = " + variant.getFlavorName()
+        println "getBuildType   name = " + variant.getBuildType().getName() + ", isDebug = " + variant.getBuildType().isDebuggable()
+        println "getProductFlavors   size = " + variant.getProductFlavors().size()
+//        println "getProductFlavors   name = " + variant.getProductFlavors().get(0).getName()
+
+        def taskProvider = variant.getCheckManifestProvider()
+        println taskProvider.getName()
+
+        def task = variant.getCheckManifest()
+        println task.getName()
+    }
+    println "========app project.afterEvaluate end========"
+}
+
+println "app build.gradle end"
