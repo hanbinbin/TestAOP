@@ -31,7 +31,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath "com.android.tools.build:gradle:4.1.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "cn.huolala.asm_plugin:asm:1.2.3-SNAPSHOT"
 //        classpath "com.delivery.wp.argus.android.plugin:auto-track:$argus_version"
