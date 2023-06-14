@@ -10,7 +10,6 @@ buildscript {
     repositories {
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/jcenter/' }
-        mavenCentral()
         google()
         jcenter()
         maven {
@@ -44,7 +43,6 @@ allprojects {
     repositories {
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/jcenter/' }
-        mavenCentral()
         google()
         jcenter()
         maven {

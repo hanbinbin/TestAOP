@@ -37,6 +37,8 @@
         <activity android:name=".thread.ThreadTestActivity" />
 
         <activity android:name=".ThirdActivity" />
+
+        <activity android:name=".TestEditTextActivity" />
     </application>
 
 </manifest>

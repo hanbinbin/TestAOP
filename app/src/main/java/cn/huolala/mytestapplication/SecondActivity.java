@@ -441,6 +441,9 @@ public class SecondActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+
+        //创建fragment
+        new MyFragment();
     }
 
     private void write(String srcPath) {

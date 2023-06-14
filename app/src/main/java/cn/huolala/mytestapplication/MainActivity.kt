@@ -123,6 +123,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SecondActivity::class.java))
         }
 
+        findViewById<Button>(R.id.jump_to_edit_text).setOnClickListener {
+            startActivity(Intent(this, TestEditTextActivity::class.java))
+        }
+
         findViewById<Button>(R.id.jump_to_thread).setOnClickListener {
             startActivity(Intent(this, ThreadTestActivity::class.java))
 //            doRequest()
