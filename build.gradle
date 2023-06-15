@@ -16,12 +16,6 @@ buildscript {
             url uri('./repos')
         }
         maven {
-            url 'http://maven.huolala.cn/repository/HuolalaComponet/'
-        }
-        maven {
-            url 'http://maven.deliverysdk.work/repository/maven-public'
-        }
-        maven {
             url "https://artifact.bytedance.com/repository/Volcengine/"
         }
         maven {
@@ -45,12 +39,6 @@ allprojects {
         maven { url 'https://maven.aliyun.com/repository/jcenter/' }
         google()
         jcenter()
-        maven {
-            url 'http://maven.huolala.cn/repository/HuolalaComponet/'
-        }
-        maven {
-            url 'http://maven.deliverysdk.work/repository/maven-public'
-        }
         maven {
             url "https://artifact.bytedance.com/repository/Volcengine/"
         }
