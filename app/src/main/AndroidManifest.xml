@@ -39,6 +39,8 @@
         <activity android:name=".ThirdActivity" />
 
         <activity android:name=".TestEditTextActivity" />
+
+        <activity android:name=".SurfaceActivity" />
     </application>
 
 </manifest>
