@@ -5,18 +5,6 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.delivery.wp.argus.android.Argus;
-import com.delivery.wp.argus.android.utilities.InternalLogger;
-import com.delivery.wp.foundation.Foundation;
-import com.delivery.wp.foundation.basic.data.WPFUserData;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import cn.huolala.mytestapplication.launch.CollectLaunch;
 
 /**
@@ -37,6 +25,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Constant.application = this;
         Log.e("TestApplication", "onCreate time = " + SystemClock.uptimeMillis());
         //init foundation
 //        Foundation.init(this, BuildConfig.DEBUG);

@@ -56,10 +56,6 @@ import cn.huolala.mytestapplication.thread.ThreadUtils;
 import cn.huolala.mytestapplication.threadpool.WPFThreadPool;
 import cn.huolala.mytestapplication.utils.TelephoneNumberUtils;
 import cn.huolala.mytestapplication.utils.Utils;
-<<<<<<< HEAD
-import cn.huolala.mytestapplication.utils.WPFTraceIdUtils;
-=======
->>>>>>> 5551c44 (项目测试代码)
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.EventListener;
@@ -85,7 +81,7 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        Log.e("traceId", "result = " + WPFTraceIdUtils.next());
+//        Log.e("traceId", "result = " + WPFTraceIdUtils.next());
         findViewById(R.id.output).setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(SecondActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {

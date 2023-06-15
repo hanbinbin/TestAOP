@@ -131,6 +131,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ThreadTestActivity::class.java))
 //            doRequest()
         }
+        findViewById<Button>(R.id.jump_to_surface_view).setOnClickListener {
+            startActivity(Intent(this, SurfaceActivity::class.java))
+        }
         testHashCode()
 //       Utils.storeId(602789)
         Utils.testHashSet()
