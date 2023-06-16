@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Choreographer
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import cn.huolala.mytestapplication.bean.ChildTestInternalBean
 import cn.huolala.mytestapplication.thread.ThreadTestActivity
 import cn.huolala.mytestapplication.utils.TimeCount
@@ -133,6 +134,10 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.jump_to_surface_view).setOnClickListener {
             startActivity(Intent(this, SurfaceActivity::class.java))
+        }
+        findViewById<ConstraintLayout>(R.id.test_surface).setOnClickListener {
+            //如果test_surface(如果蒙层下面的控件消耗了事件，则当这个地方不会发生回调；如果事件没有被消耗，当前这个地方会回调)
+            Log.e("ConstraintLayout", "测试没背景的控件，点击事件会穿透 = $it")
         }
         testHashCode()
 //       Utils.storeId(602789)
