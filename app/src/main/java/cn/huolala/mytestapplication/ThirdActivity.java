@@ -1,7 +1,19 @@
 package cn.huolala.mytestapplication;
 
+import android.animation.AnimatorInflater;
+import android.animation.LayoutTransition;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +38,8 @@ import cn.huolala.test_c.NativeLib;
  * Date on 2022/10/9.
  * PS: Not easy to write code, please indicate.
  */
-public class ThirdActivity extends AppCompatActivity implements LeakInterface {
+public class ThirdActivity extends AppCompatActivity implements LeakInterface, SensorEventListener {
+    private final String TAG = "ThirdActivity";
     ApmSlowMethodStack exampleTest = new ApmSlowMethodStack();
     List<String> list = new LinkedList<>();
     List<String> copyOnWriteArrayList = new CopyOnWriteArrayList<>();
@@ -37,11 +50,71 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface {
     public static String nameStatic = "nameStatic";
     String name = "name";
 
+    private SensorManager sensorManager;
+    private Sensor gyroscopeSensor;
+    private Sensor accelerometerSensor;
+    private float[] gyroValues = new float[3];
+    private float[] accelValues = new float[3];
+
+    private int index = 111111;
+    Animation anim_in;
+    Animation anim_out;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_third);
         CallBackManager.addCallBack(this);//测试内存泄漏
+        anim_in = AnimationUtils.loadAnimation(this, R.anim.anim_appearing);
+        anim_out = AnimationUtils.loadAnimation(this, R.anim.anim_disappearing);
+//        initSensor();
+        LinearLayout view_container = findViewById(R.id.view_container);
+        setClick(view_container);
+        addAnim(view_container);
+    }
+
+    private void addAnim(LinearLayout view_container) {
+        LayoutTransition layoutTransition = view_container.getLayoutTransition();
+        if (layoutTransition == null) {
+            layoutTransition = new LayoutTransition();
+        }
+        layoutTransition.setStartDelay(LayoutTransition.APPEARING,10);
+        layoutTransition.setDuration(1000);
+        layoutTransition.setAnimator(LayoutTransition.APPEARING, AnimatorInflater.loadAnimator(this, R.animator.animator_view_appearing));
+        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, AnimatorInflater.loadAnimator(this, R.animator.animator_view_disappearing));
+        view_container.setLayoutTransition(layoutTransition);
+    }
+
+    private void addView(LinearLayout view_container) {
+        index++;
+        TextView textView = new TextView(ThirdActivity.this);
+        textView.setText("" + index);
+        int color = ThirdActivity.this.getResources().getColor(R.color.teal_200);
+        textView.setBackgroundColor(color);
+        textView.setTranslationX(200);
+        view_container.addView(textView);
+    }
+
+    private void deleteView(LinearLayout view_container) {
+        int childCount = view_container.getChildCount();
+        if (childCount > 0) {
+            View view = view_container.getChildAt(0);
+            view_container.removeView(view);
+        }
+    }
+
+    /**
+     * 设置点击事件
+     */
+    private void setClick(LinearLayout view_container) {
+        findViewById(R.id.add_view).setOnClickListener(v -> {
+            addView(view_container);
+        });
+
+        findViewById(R.id.remove_view).setOnClickListener(v -> {
+            deleteView(view_container);
+        });
+
         findViewById(R.id.test_get_stack_reason).setOnClickListener(v -> {
             exampleTest.matchSampleRate();
         });
@@ -100,7 +173,37 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface {
         for (int i = 0; i < 5; i++) {
             Log.e("sort", "" + children.get(i).durTime());
         }
+    }
 
+    /**
+     * 获取传感器 + 获取陀螺仪 + 传感器
+     */
+    private void initSensor() {
+        Log.e(TAG, "initSensor");
+        //获取传感器管理
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        // 获取陀螺仪传器
+        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        // 获取加速计传感器
+        accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume");
+//        // 注册陀螺仪传器监听器
+//        sensorManager.registerListener(this, gyroscopeSensor, 100);
+//        // 注册加速计传感器监听器
+//        sensorManager.registerListener(this, accelerometerSensor, 100);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause");
+//        // 取消注册传感器监听器
+//        sensorManager.unregisterListener(this);
     }
 
     private void test() {
@@ -223,5 +326,49 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface {
      */
     private void testNativeHeapOOM2() {
         NativeLib.getInstance().testNativeHeadOOM2();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Log.e(TAG, "onSensorChanged");
+        // 根传感器类型获取对的数值
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            gyroValues = event.values;
+        } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            accelValues = event.values;
+        }
+        if (gyroValues != null && accelValues != null) {
+            Log.e(TAG, "gyroValues != null && accelValues != null");
+            // 计算转向度
+            float[] rotationMatrix = new float[9];
+            boolean success = SensorManager.getRotationMatrix(rotationMatrix, null, accelValues, gyroValues);
+
+            if (success) {
+                Log.e(TAG, "success");
+                float[] orientationAngles = new float[3];
+                SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+                // 转向角度（弧度）
+                float azimuthRadians = orientationAngles[0];
+                float pitchRadians = orientationAngles[1];
+                float rollRadians = orientationAngles[2];
+
+                // 将弧度转为角度
+                float azimuthDegrees = (float) Math.toDegrees(azimuthRadians);
+                float pitchDegrees = (float) Math.toDegrees(pitchRadians);
+                float rollDegrees = (float) Math.toDegrees(rollRadians);
+
+                // 在这里可以使用转向角度进行相应操作
+                // ...
+                Log.d("ThirdActivity", "Azimuth: " + azimuthDegrees + ", Pitch: " + pitchDegrees + ", Roll: " + rollDegrees);
+            } else {
+                Log.e(TAG, "fail");
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }
