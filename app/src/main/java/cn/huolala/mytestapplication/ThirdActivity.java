@@ -3,6 +3,7 @@ package cn.huolala.mytestapplication;
 import android.animation.AnimatorInflater;
 import android.animation.LayoutTransition;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
@@ -22,6 +23,17 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawable;
+import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.CenterInside;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,11 +79,42 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
     boolean clickStatus1 = true;
     boolean clickStatus2 = true;
 
+    private final RequestListener<Drawable> mRequestListener = new RequestListener<Drawable>() {
+        @Override
+        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+            WebpDrawable webpDrawable = (WebpDrawable) resource;
+            //需要设置为循环1次才会有onAnimationEnd回调
+            webpDrawable.setLoopCount(1);
+            webpDrawable.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+                @Override
+                public void onAnimationStart(Drawable drawable) {
+                    super.onAnimationStart(drawable);
+                }
+
+                @Override
+                public void onAnimationEnd(Drawable drawable) {
+                    super.onAnimationEnd(drawable);
+                    webpDrawable.unregisterAnimationCallback(this);
+                }
+            });
+            return false;
+        }
+    };
+    private Transformation<Bitmap> mTransformation;
+    private WebpDrawableTransformation mWebpDrawableTransformation;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_third);
         CallBackManager.addCallBack(this);//测试内存泄漏
+        mTransformation = new CenterInside();
+        mWebpDrawableTransformation = new WebpDrawableTransformation(mTransformation);
         anim_in = AnimationUtils.loadAnimation(this, R.anim.anim_appearing);
         anim_out = AnimationUtils.loadAnimation(this, R.anim.anim_disappearing);
 //        initSensor();
@@ -79,10 +122,40 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
         setClick(view_container);
         addAnim(view_container);
 
+        LinearLayout view_anim_layout = findViewById(R.id.view_anim_layout);
         ImageView image_view1 = findViewById(R.id.image_view1);
         ImageView image_view2 = findViewById(R.id.image_view2);
+
+
+        view_container.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.e("view_container", "onLayoutChange");
+            }
+        });
+
+        view_anim_layout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.e("view_anim_layout", "onLayoutChange");
+            }
+        });
+        image_view1.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.e("image_view1", "onLayoutChange");
+            }
+        });
+        image_view2.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.e("image_view2", "onLayoutChange");
+            }
+        });
+
         setImageView(image_view1, clickStatus1 ? R.drawable.voice_open : R.drawable.voice_close);
-        setImageView(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
+        setAnimImage(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
+
 
         image_view1.setOnClickListener(v -> {
             clickStatus1 = !clickStatus1;
@@ -91,12 +164,13 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
 
         image_view2.setOnClickListener(v -> {
             clickStatus2 = !clickStatus2;
-            setImageView(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
+            setAnimImage(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
         });
     }
 
     /**
      * 展示webp动画效果
+     *
      * @param imageView
      * @param drawableRes
      */
@@ -110,6 +184,21 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
                 animatedImageDrawable.start();
             }
         }
+    }
+
+    /**
+     * 设置按钮动画
+     *
+     * @param resource
+     * @param imageView
+     */
+    private void setAnimImage(ImageView imageView, int resource) {
+        Glide.with(ThirdActivity.this)
+                .load(resource)
+                .optionalTransform(mTransformation)
+                .optionalTransform(WebpDrawable.class, mWebpDrawableTransformation)
+                .addListener(mRequestListener)
+                .into(imageView);
     }
 
     private void addAnim(LinearLayout view_container) {
