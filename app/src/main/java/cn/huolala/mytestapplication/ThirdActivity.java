@@ -3,20 +3,25 @@ package cn.huolala.mytestapplication;
 import android.animation.AnimatorInflater;
 import android.animation.LayoutTransition;
 import android.content.Context;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,6 +64,8 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
     private int index = 111111;
     Animation anim_in;
     Animation anim_out;
+    boolean clickStatus1 = true;
+    boolean clickStatus2 = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +78,38 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
         LinearLayout view_container = findViewById(R.id.view_container);
         setClick(view_container);
         addAnim(view_container);
+
+        ImageView image_view1 = findViewById(R.id.image_view1);
+        ImageView image_view2 = findViewById(R.id.image_view2);
+        setImageView(image_view1, clickStatus1 ? R.drawable.voice_open : R.drawable.voice_close);
+        setImageView(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
+
+        image_view1.setOnClickListener(v -> {
+            clickStatus1 = !clickStatus1;
+            setImageView(image_view1, clickStatus1 ? R.drawable.voice_open : R.drawable.voice_close);
+        });
+
+        image_view2.setOnClickListener(v -> {
+            clickStatus2 = !clickStatus2;
+            setImageView(image_view2, clickStatus2 ? R.drawable.preview_close : R.drawable.preview_open);
+        });
+    }
+
+    /**
+     * 展示webp动画效果
+     * @param imageView
+     * @param drawableRes
+     */
+    private void setImageView(ImageView imageView, int drawableRes) {
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
+        imageView.setImageDrawable(drawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (drawable instanceof AnimatedImageDrawable) {
+                AnimatedImageDrawable animatedImageDrawable = (AnimatedImageDrawable) drawable;
+                animatedImageDrawable.setRepeatCount(0);
+                animatedImageDrawable.start();
+            }
+        }
     }
 
     private void addAnim(LinearLayout view_container) {
@@ -78,7 +117,7 @@ public class ThirdActivity extends AppCompatActivity implements LeakInterface, S
         if (layoutTransition == null) {
             layoutTransition = new LayoutTransition();
         }
-        layoutTransition.setStartDelay(LayoutTransition.APPEARING,10);
+        layoutTransition.setStartDelay(LayoutTransition.APPEARING, 10);
         layoutTransition.setDuration(1000);
         layoutTransition.setAnimator(LayoutTransition.APPEARING, AnimatorInflater.loadAnimator(this, R.animator.animator_view_appearing));
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, AnimatorInflater.loadAnimator(this, R.animator.animator_view_disappearing));
