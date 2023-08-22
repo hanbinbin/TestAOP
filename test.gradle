@@ -3,6 +3,7 @@ task testFile {
 }
 
 def testFile() {
+    println "======== write content start ========"
     def path = "${project.rootDir}/test/"
     File file = new File(path + "test_file")
     if (!file.exists()) {
@@ -16,4 +17,5 @@ def testFile() {
     writer.write("0987654321678900988")
     writer.flush()
     writer.close()
+    println "======== write content end ========"
 }
