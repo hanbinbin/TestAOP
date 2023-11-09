@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyTestApplication</string>
+    <string name="test_name">我是测试名字</string>
 </resources>

@@ -14,8 +14,10 @@ import cn.huolala.mytestapplication.thread.ThreadTestActivity
 import cn.huolala.mytestapplication.utils.TimeCount
 import cn.huolala.mytestapplication.utils.Utils
 import com.delivery.wp.a_module.AModuleBean
+import com.delivery.wp.a_module.AModuleUtils
 import com.delivery.wp.b_module.BModuleBean
 import com.delivery.wp.c_module.CModuleBean
+import com.model.binbin.mylibrary.AppUtils
 import okhttp3.*
 import java.io.BufferedInputStream
 import java.io.IOException
@@ -47,6 +49,16 @@ class MainActivity : AppCompatActivity() {
         }, "MainActivity-attachBaseContext-thread-name")
         Log.e("MainActivity", "thread.name=" + thread.name)
         thread.start()
+
+        Log.e("AppUtils.getLibraryName()", AppUtils.getLibraryName())
+        Log.e("AModuleUtils.getName()", AModuleUtils.getName())
+        try {
+            //此处会报异常，因为mylibrary库新0.0.4版本里面已经删除AppUtils.getLibraryVersion()方法，
+            // 导致AModuleUtils.getVersion()调用时候找不到其方法(a-module模块依赖的mylibrary库的版本是0.0.3)
+            Log.e("AModuleUtils.getVersion()", AModuleUtils.getVersion())
+        } catch (e: Exception) {
+            e.message?.let { Log.e("Exception", it) }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,8 +86,9 @@ class MainActivity : AppCompatActivity() {
         list.add(test4)
         map["4"] = test4
         Log.e("Build.MODEL", "" + Build.MODEL)
-
-        findViewById<Button>(R.id.button1).setOnClickListener {
+        val button1 = findViewById<Button>(R.id.button1)
+        button1.text = this.getString(R.string.test_name)
+        button1.setOnClickListener {
             //TODO 测试ANR
 //            Thread.sleep(15000) //耗时操作,再点击其他控件，会导致ANR
             doOption.startDoOption("test1", object : OptionClickListener {

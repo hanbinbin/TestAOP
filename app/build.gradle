@@ -56,8 +56,13 @@ dependencies {
 //    implementation "com.delivery.wp:foundation:$foundation_version"
 
     implementation project(path: ':test-c') //用于编写c的测试代码的
-    implementation project(':mylibrary') //用于测试 model
-    implementation project(':module:a-module')
+    //两种依赖方式可替换
+//    implementation project(':mylibrary') //用于测试 model
+    implementation "com.model.binbin:mylibrary:0.0.4-SNAPSHOT"//用于测试 model
+    //两种依赖方式可替换
+//    implementation project(':module:a-module')
+    implementation "com.model.binbin:a-module:0.0.2-SNAPSHOT"//内部以来的版本是com.model.binbin:mylibrary:0.0.3-SNAPSHOT
+
     implementation project(':b-module')
     implementation project(':c-module')
     //火山引擎--apm性能组件
