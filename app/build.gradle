@@ -7,11 +7,13 @@ plugins {
 println "app build.gradle start"
 
 android {
+    println "app android closure start"
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
     ndkVersion "21.1.6352462"
 
     defaultConfig {
+        println "app defaultConfig closure in android closure start"
         applicationId "cn.huolala.mytestapplication"
         minSdkVersion 21
         targetSdkVersion 29
@@ -19,13 +21,16 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        println "app defaultConfig closure in android closure end"
     }
 
     buildTypes {
+        println "app buildTypes closure in android closure start"
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        println "app buildTypes closure in android closure end"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -34,10 +39,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    println "app android closure end"
 }
 
 dependencies {
-
+    println "app dependencies closure start"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -58,10 +64,11 @@ dependencies {
     implementation project(path: ':test-c') //用于编写c的测试代码的
     //两种依赖方式可替换
 //    implementation project(':mylibrary') //用于测试 model
-    implementation "com.model.binbin:mylibrary:0.0.4-SNAPSHOT"//用于测试 model
+    implementation "com.model.binbin:mylibrary:0.0.9-SNAPSHOT"//用于测试 model
     //两种依赖方式可替换
 //    implementation project(':module:a-module')
-    implementation "com.model.binbin:a-module:0.0.2-SNAPSHOT"//内部以来的版本是com.model.binbin:mylibrary:0.0.3-SNAPSHOT
+    implementation "com.model.binbin:a-module:0.0.3-SNAPSHOT"
+//内部以来的版本是com.model.binbin:mylibrary:0.0.3-SNAPSHOT
 
     implementation project(':b-module')
     implementation project(':c-module')
@@ -74,6 +81,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     //decode webp动画
     implementation "com.github.zjupure:webpdecoder:2.0.4.12.0"
+    println "app dependencies closure end"
 }
 
 project.afterEvaluate {
@@ -131,6 +139,12 @@ project.afterEvaluate {
         println task.getName()
     }
     println "========app project.afterEvaluate end========"
+}
+
+task testAppTask {
+    println "========app testAppTask start======"
+    println "app testAppTask name = " + name
+    println "========app testAppTask end========"
 }
 
 println "app build.gradle end"

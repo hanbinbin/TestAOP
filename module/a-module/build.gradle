@@ -1,9 +1,9 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'maven'
+    id 'maven-publish'
 }
-
+println "a-module build.gradle start"
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
@@ -43,17 +43,34 @@ dependencies {
     implementation "com.model.binbin:mylibrary:0.0.3-SNAPSHOT"
 }
 
-def group = 'com.model.binbin'
-def artifactId = 'a-module'
-def version = '0.0.2-SNAPSHOT'
+def def_groupId = 'com.model.binbin'
+def def_artifactId = 'a-module'
+def def_version = '0.0.3-SNAPSHOT'
 
-uploadArchives {
+//将源码打包，这一点对kotlin来说很重要，否则业务侧无法看到源码
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+publishing {
+    publications {
+        publish2Local(MavenPublication) {
+            groupId = def_groupId
+            artifactId = def_artifactId
+            version = def_version
+            afterEvaluate {
+                artifact(tasks.getByName("bundleReleaseAar"))//依赖 bundleReleaseAar 任务，并上传其产出的aar
+            }
+            artifact(androidSourcesJar)//将源码打包进aar，尤其是代码中包含kotlin,不然代码没啥可读性；如果不需要可以去掉,
+        }
+    }
+
     repositories {
-        mavenDeployer {
-            pom.groupId = group
-            pom.artifactId = artifactId
-            pom.version = version
-            repository(url: uri(repos))
+        maven {
+            url = repos
         }
     }
 }
+
+println "a-module build.gradle end"

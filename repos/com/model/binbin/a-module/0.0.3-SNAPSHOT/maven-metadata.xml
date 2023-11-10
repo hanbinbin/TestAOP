@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.model.binbin</groupId>
+  <artifactId>a-module</artifactId>
+  <version>0.0.3-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20231110.064601</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20231110064601</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <classifier>sources</classifier>
+        <extension>jar</extension>
+        <value>0.0.3-20231110.064601-1</value>
+        <updated>20231110064601</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.3-20231110.064601-1</value>
+        <updated>20231110064601</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>aar</extension>
+        <value>0.0.3-20231110.064601-1</value>
+        <updated>20231110064601</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

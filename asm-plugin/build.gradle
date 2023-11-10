@@ -1,6 +1,6 @@
 plugins {
     id 'groovy'
-    id 'maven'
+    id 'maven-publish'
 }
 
 dependencies {
@@ -16,17 +16,22 @@ repositories {
     jcenter()
 }
 
-def group = 'cn.huolala.asm_plugin'
-def artifactId = 'asm'
-def version = '1.2.3-SNAPSHOT'
+def def_groupId = 'cn.huolala.asm_plugin'
+def def_artifactId = 'asm'
+def def_version = '1.2.4-SNAPSHOT'
 
-uploadArchives {
+publishing {
+    publications {
+        publish2Local(MavenPublication) {
+            groupId = def_groupId
+            artifactId = def_artifactId
+            version = def_version
+        }
+    }
+
     repositories {
-        mavenDeployer {
-            pom.groupId = group
-            pom.artifactId = artifactId
-            pom.version = version
-            repository(url: uri('../repos'))
+        maven {
+            url = repos
         }
     }
 }

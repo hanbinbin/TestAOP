@@ -7,7 +7,15 @@ buildscript {
     //本地仓库地址
     ext.repos = "D:\\AndroidStudioProjects\\MyTestApplication\\repos"
     println '=== root project dir: ' + rootDir
+    println "=== root project dir: " + getProjectDir()
     println '=== root project dir: ' + project.rootDir
+    println "=== root project dir: " + project.getProjectDir()
+    println '=== root project dir: ' + rootProject.rootDir
+    println "=== root project dir: " + rootProject.getProjectDir()
+    println "project name = " + name
+    println "project name = " + getName()
+    println "project name = " + project.getName()
+    println "project name = " + rootProject.getName()
     println '=== repos: ' + repos
     println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${getProperty("NEXUS_USERNAME")}"
     println "has property NEXUS_PASSWORD = ${project.hasProperty('NEXUS_PASSWORD')}, result = ${getProperty("NEXUS_PASSWORD")}"
@@ -28,7 +36,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath "com.android.tools.build:gradle:7.2.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "cn.huolala.asm_plugin:asm:1.2.3-SNAPSHOT"
 //        classpath "com.delivery.wp.argus.android.plugin:auto-track:$argus_version"
