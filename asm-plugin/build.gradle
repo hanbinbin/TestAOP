@@ -20,12 +20,23 @@ def def_groupId = 'cn.huolala.asm_plugin'
 def def_artifactId = 'asm'
 def def_version = '1.2.4-SNAPSHOT'
 
+//将源码打包，这一点对kotlin来说很重要，否则业务侧无法看到源码
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+//notice: 就是 components 组件信息，只有在 Gradle 配置完成之后，才能够拿到(纯java项目不需要，直接可使用from components.java导入源文件)，所以在使用的时候，需要放在 afterEvaluate 闭包内。
+//        这点一定要注意，我就是在这个地方，被坑了，开始没有放在 afterEvaluate 闭包内，所以一直找不到 release 组件
+
 publishing {
     publications {
         publish2Local(MavenPublication) {
             groupId = def_groupId
             artifactId = def_artifactId
             version = def_version
+            from components.java //如果是纯java 项目，直接可以直接使用from components.java导入相关java文件进行编译
+            artifact(androidSourcesJar)//将源码打包进jar，尤其是代码中包含kotlin,不然代码没啥可读性；如果不需要可以去掉,
         }
     }
 
