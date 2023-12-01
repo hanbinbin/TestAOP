@@ -1,0 +1,85 @@
+import java.util.function.BiConsumer
+
+def REPLACE_HOLDER = ","
+
+//gradlew assembleRelease -P appConfig="isActivation=true,testSrting=sdafad,testValue=1"
+private String getAppConfigValue() {
+    if (project.hasProperty('appConfig')) {
+        return appConfig
+    } else {
+        return "" // default config
+    }
+}
+
+
+rootProject.ext.getAppConfigProperties = {
+
+    Properties props = new Properties()
+
+    // load from default config
+    loadDefaultProperties(props)
+
+    // load from command
+    String config = getAppConfigValue()
+
+    config = config.replaceAll(REPLACE_HOLDER, System.lineSeparator())
+    println "getAppConfigProperties config = " + config
+    props.load(new StringReader(config))
+    println "getAppConfigProperties props = " + props
+    return props
+}
+
+static def loadDefaultProperties(Properties configProps) {
+    // load from default config，这里书写默认的属性
+    configProps.put("isActivation", false)
+}
+
+rootProject.ext.convertPropertiesToConfigField = { buildConfigField ->
+
+    def properties = rootProject.ext.getAppConfigProperties()
+    properties.forEach(new BiConsumer<Object, Object>() {
+
+        def CONFIG_FIELD_BOOLEAN = "boolean"
+        def CONFIG_FIELD_STRING = "String"
+        def CONFIG_FIELD_INTEGER = "Integer"
+
+        @Override
+        void accept(Object key, Object value) {
+            def strKey = String.valueOf(key)
+            def strValue = String.valueOf(value)
+            if (strValue.isInteger()) {
+                addIntegerConfigField(strKey, Integer.valueOf(strValue))
+            } else if (isBoolean(strValue)) {
+                addBooleanConfigField(strKey, Boolean.valueOf(strValue))
+            } else {
+                addStringConfigField(strKey, strValue)
+            }
+        }
+
+        private void addStringConfigField(String key, String value) {
+            buildConfigField(CONFIG_FIELD_STRING, key, "\"${value}\"")
+        }
+
+        private void addBooleanConfigField(String key, boolean value) {
+            buildConfigField(CONFIG_FIELD_BOOLEAN, key, "${value}")
+        }
+
+        private void addIntegerConfigField(String key, Integer value) {
+            buildConfigField(CONFIG_FIELD_INTEGER, key, "${value}")
+        }
+
+        private boolean isBoolean(String key) {
+            return key.equalsIgnoreCase("true") || key.equalsIgnoreCase("false")
+        }
+    })
+}
+
+
+android {
+    defaultConfig {
+        rootProject.ext.convertPropertiesToConfigField() { type, key, value ->
+            println "convertPropertiesToConfigField type = " + type + ", key = " + key + ", value = " + value
+            buildConfigField(type, key, value)
+        }
+    }
+}

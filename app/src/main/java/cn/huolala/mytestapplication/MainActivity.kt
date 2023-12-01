@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.button2).setOnClickListener {
-            doOption.startDoOption("test2", object : OptionClickListener {
+            doOption.startDoOption("folder2/test4", object : OptionClickListener {
                 override fun optionClick(tag: String, option: String) {
                     Log.e(tag, option)
                 }

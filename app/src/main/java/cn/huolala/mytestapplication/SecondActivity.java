@@ -440,6 +440,16 @@ public class SecondActivity extends AppCompatActivity {
 
         //创建fragment
         new MyFragment();
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+              if(i==j){
+                  Log.e("break", "start i = "+i);
+                break;
+              }
+            }
+            Log.e("break", "end");
+        }
     }
 
     private void write(String srcPath) {
@@ -456,11 +466,11 @@ public class SecondActivity extends AppCompatActivity {
 
             File sdCard = Environment.getExternalStorageDirectory();
             File dir = new File(sdCard.getAbsolutePath() + "/aaaa");
-            if(!dir.exists()) {
+            if (!dir.exists()) {
                 dir.mkdirs();
             }
             File file = new File(dir, srcPath);
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.createNewFile();
             }
             FileOutputStream fos = new FileOutputStream(file);
@@ -478,6 +488,7 @@ public class SecondActivity extends AppCompatActivity {
 
 
     int total = 0;
+
     private void innerInvoke() {
         if (total > 1000) {
             return;

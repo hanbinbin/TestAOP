@@ -53,8 +53,8 @@ task androidSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-//notice: 就是 components 组件信息，只有在 Gradle 配置完成之后，才能够拿到(纯java项目不需要，直接可使用from components.java导入源文件)，所以在使用的时候，需要放在 afterEvaluate 闭包内。
-//        这点一定要注意，我就是在这个地方，被坑了，开始没有放在 afterEvaluate 闭包内，所以一直找不到 release 组件
+//notice: 就是 components 组件信息，只有在 Gradle 配置完成之后，才能够拿到(纯java项目不需要，直接可使用from components.java导入源文件，进行编译即可，具体见asm-plugin项目的配置文件即可)，
+//所以在使用的时候，需要放在 afterEvaluate 闭包内。这点一定要注意，我就是在这个地方，被坑了，开始没有放在 afterEvaluate 闭包内，所以一直找不到 release 组件
 
 publishing {
     publications {

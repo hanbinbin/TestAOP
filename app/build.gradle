@@ -5,28 +5,55 @@ plugins {
 //    id 'cn-huolala-asm-plugin'
 }
 println "app build.gradle start"
-
+//导入自定义编译任务
+apply from: "build_task.gradle"
 android {
     println "app android closure start"
     compileSdkVersion 29
     buildToolsVersion "30.0.3"
-    ndkVersion "21.1.6352462"
+    ndkVersion "21.4.7075529"
 
     defaultConfig {
         println "app defaultConfig closure in android closure start"
         applicationId "cn.huolala.mytestapplication"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 100
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         println "app defaultConfig closure in android closure end"
     }
 
+    flavorDimensions "brand" ,"country" //不同维度
+
+    productFlavors {
+        xiaomi {
+            dimension "brand"
+        }
+        huawei {
+            dimension "brand"
+        }
+        china {
+            dimension "country"
+        }
+        tailand {
+            dimension "country"
+        }
+    }
+
     buildTypes {
         println "app buildTypes closure in android closure start"
+        //debug包会自动去拿本地默认的签名文件(C:\Users\username\.android\debug.keystore)，即使flavor设置了签名; 除非把signingConfig设置成null
+        debug{
+            // Set to null to override default debug keystore and defer to the product flavor.
+            signingConfig null //此处设置为null且在flavor里面没有设置签名，产物就不会被签名
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
         release {
+            //release包如果在flavor里面没有设置签名，则产物不会被签名
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -42,8 +69,16 @@ android {
     println "app android closure end"
 }
 
+def getImplModuleName() {
+    Gradle gradle = getGradle()
+    String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+    println tskReqStr
+    return tskReqStr
+}
+
 dependencies {
     println "app dependencies closure start"
+    getImplModuleName()
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -100,15 +135,32 @@ project.afterEvaluate {
     println "rootProject build.gradle dir = " + rootProject.file("build.gradle")
     println "rootProject name = " + rootProject.getName()
     println "get rootProject name by project = " + project.getRootProject().getName()
+    println "get rootProject name by project = " + getRootProject().getName()
     println "get rootDir name by project= " + project.getRootDir()
 
-    def childProjects1 = rootProject.getChildProjects()
-    childProjects1.each {
-        println "rootProject contain key=${it.key},value=${it.value}"
-    }
 
-    childProjects.each {
-        println "app contain key=${it.key},value=${it.value} "
+    getChildProjects().each {
+        println "app contain ---------${it.value.name} "
+    }
+    getSubprojects().each {
+        println "app contain ---------${it.value.name} "
+    }
+    rootProject.getChildProjects().each {
+        println "rootProject.getChildProjects() contain --------${it.value.name}"
+    }
+    getAllprojects().eachWithIndex { Project entry, int i ->
+        if (i == 0) {
+            println("CurrentProject-------${entry.name}")
+        } else {
+            println("SubProject-------${entry.name}")
+        }
+    }
+    rootProject.getAllprojects().eachWithIndex { Project entry, int i ->
+        if (i == 0) {
+            println("RootProject-------${entry.name}")
+        } else {
+            println("SubProject-------${entry.name}")
+        }
     }
 
     println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.findProperty("NEXUS_USERNAME")}"
@@ -121,30 +173,87 @@ project.afterEvaluate {
 //        println "properties key=${it.key},value=${it.value}"
 //    }
 
-    project.android.applicationVariants.all { variant ->
-        println "getApplicationId = " + variant.getApplicationId()
-        println "name = " + variant.getName()
-        println "baseName = " + variant.getBaseName()
-        println "description = " + variant.getDescription()
-        println "dirName = " + variant.getDirName()
-        println "getFlavorName = " + variant.getFlavorName()
-        println "getBuildType   name = " + variant.getBuildType().getName() + ", isDebug = " + variant.getBuildType().isDebuggable()
-        println "getProductFlavors   size = " + variant.getProductFlavors().size()
-//        println "getProductFlavors   name = " + variant.getProductFlavors().get(0).getName()
-
+    android.applicationVariants.all { variant ->
+        println "\n"
+        println "variant.applicationId = $variant.applicationId, variant.name = $variant.name, variant.baseName = $variant.baseName"
+        println "variant.versionName = $variant.versionName, variant.versionCode = $variant.versionCode"
+        println "variant.description = $variant.description, variant.dirName = $variant.dirName"
+        println "variant.flavorName = $variant.flavorName, variant.buildType.name = $variant.buildType.name, variant.buildType.debuggable = $variant.buildType.debuggable"
+        println "getProductFlavors size = " + variant.getProductFlavors().size()
+        variant.getProductFlavors().each{ flavor ->
+            println "getProductFlavors name = " + flavor.getName()
+        }
         def taskProvider = variant.getCheckManifestProvider()
-        println taskProvider.getName()
+        println "variant.getCheckManifestProvider() = $taskProvider"
+        println "variant.getCheckManifestProvider().getName() = $taskProvider.name"
 
-        def task = variant.getCheckManifest()
-        println task.getName()
+        variant.outputs.all { output ->
+            println "output.name = $output.name, output.baseName = $output.baseName"
+            println "output.outputFileName = $output.outputFileName"//文件名
+            println "output.outputFile = $output.outputFile"//文件地址
+            println "output.outputFile.path = $output.outputFile.path"//文件地址
+        }
     }
     println "========app project.afterEvaluate end========"
 }
 
-task testAppTask {
-    println "========app testAppTask start======"
-    println "app testAppTask name = " + name
-    println "========app testAppTask end========"
+//监听task对象被添加到一个Project
+tasks.whenTaskAdded { task ->
+//    println "####### $task.name #######" //或输出当前project里面添加所有task名称
 }
+
+task testAppTask {
+    println "========app $name start======"
+    doFirst() {
+        println "$name doFirst"
+    }
+    doLast() {
+        println "$name doLast"
+    }
+    //使用相对路径
+    File configFile = file('src/main/java/test.java')
+    if (!configFile.exists()) {
+        println "========create file ========"
+        configFile.createNewFile()
+    } else {
+        println "========file exists ========"
+    }
+    println "========app $name end========"
+}
+
+task("testAPPTask1", {
+    println "========app $name start======"
+    doFirst() {
+        println "$name doFirst"
+    }
+    doLast() {
+        println "$name doLast"
+    }
+    // 指定目录创建文件树对象
+    FileTree tree = fileTree(dir: 'src/main/assets')
+    // 遍历文件树的所有文件
+    tree.each { File file ->
+        println file
+    }
+    copy {
+        from 'src/main/assets/folder2'
+        into 'src/main/assets/folder1'
+        //排除test4文件
+        exclude { details -> //details is FileTreeElement
+            println "details = $details"
+            println "details.size = $details.size"
+            println "details.file = $details.file"
+            details.file.name == "test4"
+        }
+        //使用一个闭包方式重命名文件
+        rename { String fileName ->
+            println "fileName = $fileName"
+            if (fileName == "test3") {
+                fileName.replace("test3",'test5')
+            }
+        }
+    }
+    println "========app $name end========"
+})
 
 println "app build.gradle end"
