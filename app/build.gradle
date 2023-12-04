@@ -47,7 +47,7 @@ android {
         //debug包会自动去拿本地默认的签名文件(C:\Users\username\.android\debug.keystore)，即使flavor设置了签名; 除非把signingConfig设置成null
         debug{
             // Set to null to override default debug keystore and defer to the product flavor.
-            signingConfig null //此处设置为null且在flavor里面没有设置签名，产物就不会被签名
+//            signingConfig null //此处设置为null且在flavor里面没有设置签名，产物就不会被签名
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

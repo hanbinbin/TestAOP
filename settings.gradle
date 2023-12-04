@@ -14,5 +14,6 @@ include ':module:a-module' //relative path:module_name;  在别的模块也需�
 include ':b-module' //project(":b-module").projectDir = new File("module/b-module")
 project(":b-module").projectDir = new File("module/b-module")
 //method 3
+println "settings.gradle rootDir = $rootDir"
 include ':c-module' //project(":demo").projectDir=new File(rootDir,"demo")
 project(":c-module").projectDir = new File(rootDir, "module/c-module")

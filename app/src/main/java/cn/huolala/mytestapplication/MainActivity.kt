@@ -50,12 +50,12 @@ class MainActivity : AppCompatActivity() {
         Log.e("MainActivity", "thread.name=" + thread.name)
         thread.start()
 
-        Log.e("AppUtils.getLibraryName()", AppUtils.getLibraryName())
+        Log.e("AppUtils.getLibraryName", AppUtils.getLibraryName())
         Log.e("AModuleUtils.getName()", AModuleUtils.getName())
         try {
             //此处会报异常，因为mylibrary库新0.0.4版本里面已经删除AppUtils.getLibraryVersion()方法，
             // 导致AModuleUtils.getVersion()调用时候找不到其方法(a-module模块依赖的mylibrary库的版本是0.0.3)
-            Log.e("AModuleUtils.getVersion()", AModuleUtils.getVersion())
+            Log.e("AModuleUtils.getVersion", AModuleUtils.getVersion())
         } catch (e: Throwable) {  //会抛出来 java.lang.NoSuchMethodError; 使用Exception无法来捕获，必须使用使用父类Throwable来捕获
             e.message?.let { Log.e("Exception", it) }
         }
