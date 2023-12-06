@@ -42,6 +42,38 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
+// 统计build/assemble执行时长
+def startBuildTime, endBuildTime
+project.afterEvaluate { Project project ->
+    // 通过taskName找到指定的Task
+    def preBuildTask = project.tasks.getByName('preBuild') // 执行build任务时，第一个被执行的Task
+    // 在preBuildTask这个task执行前执行
+    preBuildTask.doFirst {
+        startBuildTime = System.currentTimeMillis()
+    }
+    def buildTask = project.tasks.getByName('build') // 执行build任务时，最后一个被执行的Task
+    if (buildTask != null) {
+        println "buildTask is not null"
+        // 在buildTask这个task执行后执行
+        buildTask.doLast {
+            endBuildTime = System.currentTimeMillis()
+            println "the build time is: ${endBuildTime - startBuildTime}"
+        }
+    }
+    println "assembleTask start"
+    def assembleTask = project.tasks.find { task ->
+        if (task.name.contains("assembleDebug") || task.name.contains("assembleRelease")) {
+            return task
+        }
+    }
+    println "assembleTask = ${assembleTask}"
+    // 执行assemble任务时，最后一个被执行的Task
+    assembleTask.doLast {
+        endBuildTime = System.currentTimeMillis()
+        println "the build time is: ${endBuildTime - startBuildTime}"
+    }
+}
+
 
 def def_groupId = 'com.model.binbin'
 def def_artifactId = 'mylibrary'

@@ -65,3 +65,28 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+/**
+ * 表示本Project "task 依赖关系已经生成"
+ */
+gradle.taskGraph.whenReady {
+    TaskExecutionGraph graph ->
+        println "root Project task has create"
+}
+
+/**
+ * 每一个 Task 任务执行之前回调
+ */
+gradle.taskGraph.beforeTask {
+    Task task ->
+        println "root Project[${task.project.name}]--->Task[${task.name}] has invoke and return"
+}
+
+/**
+ * 每一个 task 执行之后被回调
+ */
+gradle.taskGraph.afterTask {
+    task, TaskState taskState ->
+        //第二个参数表示 task 的状态，是可选的参数
+        println "root Project[${task.project.name}]--->Task[${task.name}] do finish,taskState[upToDate:${taskState.upToDate},skipped:${taskState.skipped},executed:${taskState.executed},didWork:${taskState.didWork}]"
+}

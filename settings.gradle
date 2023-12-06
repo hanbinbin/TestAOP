@@ -1,3 +1,4 @@
+println "settings start..."
 include ':asm-plugin'
 include ':apt-api'
 include ':apt-compiler'
@@ -17,3 +18,33 @@ project(":b-module").projectDir = new File("module/b-module")
 println "settings.gradle rootDir = $rootDir"
 include ':c-module' //project(":demo").projectDir=new File(rootDir,"demo")
 project(":c-module").projectDir = new File(rootDir, "module/c-module")
+
+// 当settings.gradle中引入的所有project都被创建好后调用，只在该文件设置才会生效
+gradle.projectsLoaded {
+    println "settings projectsLoaded..."
+}
+
+// settings.gradle配置完后调用，只对settings.gradle设置生效
+gradle.settingsEvaluated {
+    println "settings settingsEvaluated..."
+}
+
+// 在每个project进行配置前调用，child project必须在root project中设置才会生效，root project必须在settings.gradle中设置才会生效
+gradle.beforeProject { proj ->
+    println "settings: ${proj.name} gradle beforeProject"
+}
+
+// 在每个project配置后调用
+gradle.afterProject { proj ->
+    println "settings: ${proj.name} gralde afterProject"
+}
+
+//所有project配置完成后调用,可直接在setting.gradle中监听, 全局调用一次(就看你设置在什么地方调用，如果app下也添加了,那么全局会调用两次)
+gradle.projectsEvaluated { proj ->
+    println "settings: gradle projectsEvaluated"
+}
+
+//构建结束后调用，全局调用一次(就看你设置在什么地方调用，如果app下也添加了,那么全局会调用两次)
+gradle.buildFinished {
+    println "settings: gradle buildFinished "
+}

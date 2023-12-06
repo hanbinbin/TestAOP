@@ -25,7 +25,7 @@ android {
         println "app defaultConfig closure in android closure end"
     }
 
-    flavorDimensions "brand" ,"country" //不同维度
+    flavorDimensions "brand", "country" //不同维度
 
     productFlavors {
         xiaomi {
@@ -45,7 +45,7 @@ android {
     buildTypes {
         println "app buildTypes closure in android closure start"
         //debug包会自动去拿本地默认的签名文件(C:\Users\username\.android\debug.keystore)，即使flavor设置了签名; 除非把signingConfig设置成null
-        debug{
+        debug {
             // Set to null to override default debug keystore and defer to the product flavor.
 //            signingConfig null //此处设置为null且在flavor里面没有设置签名，产物就不会被签名
             minifyEnabled false
@@ -119,6 +119,11 @@ dependencies {
     println "app dependencies closure end"
 }
 
+project.beforeEvaluate {
+    println "========app project.beforeEvaluate start========"
+    println "========app project.beforeEvaluate end========"
+}
+
 project.afterEvaluate {
     println "========app project.afterEvaluate start========"
 //    project.tasks.all { task ->
@@ -127,7 +132,6 @@ project.afterEvaluate {
 //    }
 //    project.plugins
 //    project.extensions
-
     println "project name = " + project.getName()
     println "project path = " + project.getPath()
     println "project dir = " + project.getProjectDir()
@@ -137,7 +141,14 @@ project.afterEvaluate {
     println "get rootProject name by project = " + project.getRootProject().getName()
     println "get rootProject name by project = " + getRootProject().getName()
     println "get rootDir name by project= " + project.getRootDir()
-
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.findProperty("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.property("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${findProperty("NEXUS_USERNAME")}"
+    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${property("NEXUS_USERNAME")}"
+    println "has property NEXUS_PASSWORD = ${project.hasProperty('NEXUS_PASSWORD')}, result = ${getProperty("NEXUS_PASSWORD")}"
+//    properties.each {
+//        println "properties key=${it.key},value=${it.value}"
+//    }
 
     getChildProjects().each {
         println "app contain ---------${it.value.name} "
@@ -163,16 +174,6 @@ project.afterEvaluate {
         }
     }
 
-    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.findProperty("NEXUS_USERNAME")}"
-    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${project.property("NEXUS_USERNAME")}"
-    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${findProperty("NEXUS_USERNAME")}"
-    println "has property NEXUS_USERNAME = ${project.hasProperty('NEXUS_USERNAME')}, result = ${property("NEXUS_USERNAME")}"
-    println "has property NEXUS_PASSWORD = ${project.hasProperty('NEXUS_PASSWORD')}, result = ${getProperty("NEXUS_PASSWORD")}"
-
-//    properties.each {
-//        println "properties key=${it.key},value=${it.value}"
-//    }
-
     android.applicationVariants.all { variant ->
         println "\n"
         println "variant.applicationId = $variant.applicationId, variant.name = $variant.name, variant.baseName = $variant.baseName"
@@ -180,7 +181,7 @@ project.afterEvaluate {
         println "variant.description = $variant.description, variant.dirName = $variant.dirName"
         println "variant.flavorName = $variant.flavorName, variant.buildType.name = $variant.buildType.name, variant.buildType.debuggable = $variant.buildType.debuggable"
         println "getProductFlavors size = " + variant.getProductFlavors().size()
-        variant.getProductFlavors().each{ flavor ->
+        variant.getProductFlavors().each { flavor ->
             println "getProductFlavors name = " + flavor.getName()
         }
         def taskProvider = variant.getCheckManifestProvider()
@@ -249,11 +250,16 @@ task("testAPPTask1", {
         rename { String fileName ->
             println "fileName = $fileName"
             if (fileName == "test3") {
-                fileName.replace("test3",'test5')
+                fileName.replace("test3", 'test5')
             }
         }
     }
     println "========app $name end========"
 })
+
+//gradle.properties 里面的属性是能够在全局properties中获取到的
+println "kotlin.code.style = ${property("kotlin.code.style")}"
+//local.properties 里面的属性是不能在全局properties中获取到的
+//println "sdk.dir = ${property("sdk.dir")}"
 
 println "app build.gradle end"
