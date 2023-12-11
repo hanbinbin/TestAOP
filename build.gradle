@@ -1,5 +1,28 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: "cn-huolala-asm-plugin"
 apply from: "test.gradle"
+//预设一些参数
+ext {
+    println "do load ext start"
+    versionCode = '1.0.0'
+    versionName = '100'
+    versionInfo = 'App的第1个版本，完成聊天功能'
+    appAssembleDefaultConfig = [
+            // 这里一定要是一个map
+    ]
+    brandTypeMap = [
+            "E12_CN"    : "E12B",
+            "E11-ASE_TH": "XiaomiTailand",
+            "E11-G_ME"  : "E11ASE",
+            "E11-G_OTTC": "E11ASE",
+    ]
+
+    destFile = file('release.xml')
+    if (destFile != null && !destFile.exists()) {
+        destFile.createNewFile()
+    }
+    println "do load ext end"
+}
 buildscript {
     ext.kotlin_version = "1.4.32"
     ext.argus_version = "4.4.3-rc.1"
@@ -38,7 +61,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:7.2.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
-        classpath "cn.huolala.asm_plugin:asm:1.2.4-SNAPSHOT"
+        classpath "cn.huolala.asm_plugin:asm:1.2.5.3-SNAPSHOT"
 //        classpath "com.delivery.wp.argus.android.plugin:auto-track:$argus_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -89,4 +112,120 @@ gradle.taskGraph.afterTask {
     task, TaskState taskState ->
         //第二个参数表示 task 的状态，是可选的参数
         println "root Project[${task.project.name}]--->Task[${task.name}] do finish,taskState[upToDate:${taskState.upToDate},skipped:${taskState.skipped},executed:${taskState.executed},didWork:${taskState.didWork}]"
+}
+
+//测试任务之间的依赖
+task test_taskX {
+    doLast {
+        println "execute test_taskX"
+    }
+}
+
+task test_taskY {
+    doLast {
+        println "execute test_taskY"
+    }
+}
+//第一种
+task taskZ(dependsOn: [test_taskX, test_taskY]) {
+    doLast {
+        println "execute taskZ"
+    }
+}
+//第二种
+task taskU {
+    doLast {
+        println "execute taskU"
+    }
+}
+taskU.dependsOn(test_taskY, test_taskX)
+
+//第三种
+task taskP {
+    dependsOn this.tasks.findAll { task ->
+        // 依赖所有以lib开头的task
+        return task.name.startsWith('test_task')
+    }
+    doLast {
+        println 'taskP'
+    }
+}
+
+//Task的输入输出
+//流程：Task Inputs --> Task One ——> Task Outputs --> 通过输入输出关联Task间的关闭 --> Task Inputs --> Task Two ——> Task Outputs --> .....
+//流程分析：
+//1.inputs和outputs是Task的属性。
+//2.inputs可以是任意数据类型对象，而outputs只能是文件（或文件夹）。
+//3.TaskA的outputs可以作为TaskB的inputs。
+
+// writeTask输入扩展属性，输出文件
+task writeTask {
+    // 为task指定输入
+    inputs.property('versionCode', this.versionCode)
+    inputs.property('versionName', this.versionName)
+    inputs.property('versionInfo', this.versionInfo)
+    // 为task指定输出
+    outputs.file this.destFile
+    doLast {
+        def data = inputs.getProperties() // 返回一个map
+        File file = outputs.getFiles().getSingleFile()
+        // 将map转为实体对象
+        def versionMsg = new VersionMsg(data)
+        def sw = new StringWriter()
+        def xmlBuilder = new groovy.xml.MarkupBuilder(sw)
+        if (file.text != null && file.text.size() <= 0) { // 文件中没有内容
+            // 实际上，xmlBuilder将xml数据写入到sw中
+            xmlBuilder.releases { // <releases>
+                release { // <releases>的子节点<release>
+                    versionCode(versionMsg.versionCode)
+                    // <release>的子节点<versionCode>1.0.0<versionCode>
+                    versionName(versionMsg.versionName)
+                    versionInfo(versionMsg.versionInfo)
+                }
+            }
+            // 将sw里的内容写到文件中
+            file.withWriter { writer ->
+                writer.append(sw.toString())
+            }
+        } else { // 已经有其它版本信息了
+            xmlBuilder.release {
+                versionCode(versionMsg.versionCode)
+                versionName(versionMsg.versionName)
+                versionInfo(versionMsg.versionInfo)
+            }
+            def lines = file.readLines()
+            def lengths = lines.size() - 1
+            file.withWriter { writer ->
+                lines.eachWithIndex { String line, int index ->
+                    if (index != lengths) {
+                        writer.append(line + '\r\n')
+                    } else if (index == lengths) {
+                        writer.append(sw.toString() + '\r\n')
+                        writer.append(line + '\r\n')
+                    }
+                }
+            }
+        }
+    }
+}
+
+// readTask输入writeTask的输出文件
+task readTask {
+    inputs.file destFile
+    doLast {
+        def file = inputs.files.singleFile
+        println file.text
+    }
+}
+
+task taskTest(dependsOn: [writeTask, readTask]) {
+    doLast {
+        println '任务执行完毕'
+    }
+}
+
+class VersionMsg {
+    String versionCode
+    String versionName
+    String versionInfo
 }

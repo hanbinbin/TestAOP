@@ -158,6 +158,7 @@ project.afterEvaluate {
     }
     rootProject.getChildProjects().each {
         println "rootProject.getChildProjects() contain --------${it.value.name}"
+        println "rootProject.getChildProjects() contain --------${it.value.getProjectDir()}"
     }
     getAllprojects().eachWithIndex { Project entry, int i ->
         if (i == 0) {

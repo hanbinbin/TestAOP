@@ -1,0 +1,176 @@
+import java.util.function.BiConsumer
+
+def REPLACE_HOLDER = ","
+def PARAM_COMMAND = " -P "
+
+ext {
+    appAssembleDefaultConfig = [
+            // 这里一定要是一个map
+    ]
+    brandTypeMap = [
+            "E12_CN"    : "E12B",
+            "E11-ASE_TH": "E11ASE",
+            "E11-G_ME"  : "E11ASE",
+            "E11-G_OTTC": "E11ASE",
+    ]
+}
+
+// 各自APP可以面对不同的情况，可以做不同的修改，组合执行特殊的task
+def combineRealGradleTask(Properties props) {
+    StringBuilder builder = new StringBuilder()
+    String subject = props.get("subProject", "app")
+    builder.append(":${subject}").append(":assemble")
+    def brandType = getBrandType(props)
+    builder.append(brandType)
+    def isRelease = Boolean.parseBoolean(props.getProperty("isRelease", "true")) // 默认编译release
+    if (isRelease) {
+        builder.append("Release")
+    } else {
+        builder.append("Debug")
+    }
+    return builder.toString()
+}
+
+task assembleJenkinsBuild(type: Exec) {
+    if (project.hasProperty('buildConfig')) {
+        workingDir = project.getRootDir()
+        println("start jeakins build apk process, config : " + buildConfig + "\nworkingDir: " + workingDir)
+        def realBuildConfig = buildConfig
+        buildConfig = buildConfig.replaceAll(REPLACE_HOLDER, System.lineSeparator())
+        // parse config string to Properties
+        Properties props = new Properties()
+        props.load(new StringReader(buildConfig))
+
+        // start to assemble shell commend
+        ArrayList commands = getBaseCommand()
+        StringBuilder builder = new StringBuilder()
+
+        if (isWindowsEnvironment()) {
+            builder.append(" gradlew ")
+        } else {
+            builder.append("bash ./gradlew ")
+        }
+        // convert to real gradle task
+        builder.append(combineRealGradleTask(props))
+        builder.append(" --stacktrace -info ")
+
+        // Transfer new parameters
+        builder.append(PARAM_COMMAND).append("appAssembleConfig=")
+        if (isWindowsEnvironment()) {
+            builder.append("\"${realBuildConfig}\"")
+        } else {
+            builder.append("${realBuildConfig}")
+        }
+
+        commands << builder.toString()
+        println("execute comand is : " + builder.toString())
+        commandLine = commands
+    } else {
+        println("not in jeakins build apk process ")
+    }
+}
+
+static def isWindowsEnvironment() {
+    return System.getProperty("os.name").toLowerCase().startsWith("windows")
+}
+
+def getBrandType(Properties props) {
+    def brandType = props.getProperty("CONFIG_VEHICLE_MODLE", "")  // 默认全量
+
+    if (project.hasProperty("brandTypeMap") && project.brandTypeMap instanceof Map) {
+        String brand = project.brandTypeMap.get(brandType)
+        if (brand != null && !brand.isEmpty() && !brand.isBlank()) {
+            brandType = brand
+        } else {
+            brandType = ""
+        }
+    } else {
+        println("has not set brand map ")
+    }
+    return brandType
+}
+
+static def getBaseCommand() {
+    def commands = []
+    if (isWindowsEnvironment()) {
+        commands << 'cmd'
+        commands << '/c'
+    } else {
+        commands << 'bash'
+        commands << '-c'
+    }
+    return commands
+}
+
+def getAppAssembleConfigValue() {
+    if (project.hasProperty('appAssembleConfig')) {
+        return appAssembleConfig
+    } else {
+        return ""
+    }
+}
+
+rootProject.ext.getAppConfigProperties = {
+    Properties props = new Properties()
+    if (project.hasProperty("appAssembleDefaultConfig") && project.appAssembleDefaultConfig instanceof Map) {
+        props.putAll(project.appAssembleDefaultConfig)      // load  from default
+    } else {
+        println("has not set default app assameble conifig")
+    }
+    String config = getAppAssembleConfigValue()  // load from command
+    config = config.replaceAll(REPLACE_HOLDER, System.lineSeparator())
+    props.load(new StringReader(config))
+    println("App Config Properties: " + props)
+    return props
+}
+
+// 可提供外部，rootProject.ext.getAppConfigProperty("key") 获取相关的编译参数值
+rootProject.ext.getAppConfigProperty = { String key ->
+    Properties properties = rootProject.ext.getAppConfigProperties()
+    return properties.get(key)
+}
+
+
+// 可提供外部，将编译参数直接转化为BuildConfig中的变量
+rootProject.ext.convertPropertiesToConfigField = { buildConfigField ->
+
+    println("start to convert properties to configField")
+
+    def properties = rootProject.ext.getAppConfigProperties()
+    properties.forEach(new BiConsumer<Object, Object>() {
+
+        def CONFIG_FIELD_BOOLEAN = "boolean"
+        def CONFIG_FIELD_STRING = "String"
+        def CONFIG_FIELD_INTEGER = "Integer"
+
+        @Override
+        void accept(Object key, Object value) {
+            def strKey = String.valueOf(key)
+            def strValue = String.valueOf(value)
+            if (strValue.isInteger()) {
+                addIntegerConfigField(strKey, Integer.valueOf(strValue))
+            } else if (isBoolean(strValue)) {
+                addBooleanConfigField(strKey, Boolean.valueOf(strValue))
+            } else {
+                addStringConfigField(strKey, strValue)
+            }
+        }
+
+        private void addStringConfigField(String key, String value) {
+            buildConfigField("$CONFIG_FIELD_STRING", "$key", "\"${value}\"")
+        }
+
+        private void addBooleanConfigField(String key, boolean value) {
+            buildConfigField("$CONFIG_FIELD_BOOLEAN", "$key", "${value}")
+        }
+
+        private void addIntegerConfigField(String key, Integer value) {
+            buildConfigField("$CONFIG_FIELD_INTEGER", "$key", "${value}")
+        }
+
+        private boolean isBoolean(String key) {
+            return key.equalsIgnoreCase("true") || key.equalsIgnoreCase("false")
+        }
+    })
+
+}

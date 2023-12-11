@@ -18,7 +18,7 @@ repositories {
 
 def def_groupId = 'cn.huolala.asm_plugin'
 def def_artifactId = 'asm'
-def def_version = '1.2.4-SNAPSHOT'
+def def_version = '1.2.5.3-SNAPSHOT'
 
 //将源码打包，这一点对kotlin来说很重要，否则业务侧无法看到源码
 task androidSourcesJar(type: Jar) {

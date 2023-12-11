@@ -19,15 +19,16 @@ println "settings.gradle rootDir = $rootDir"
 include ':c-module' //project(":demo").projectDir=new File(rootDir,"demo")
 project(":c-module").projectDir = new File(rootDir, "module/c-module")
 
+// settings.gradle配置完后调用，只对settings.gradle设置生效
+gradle.settingsEvaluated {
+    println "settings settingsEvaluated..."
+}
+
 // 当settings.gradle中引入的所有project都被创建好后调用，只在该文件设置才会生效
 gradle.projectsLoaded {
     println "settings projectsLoaded..."
 }
 
-// settings.gradle配置完后调用，只对settings.gradle设置生效
-gradle.settingsEvaluated {
-    println "settings settingsEvaluated..."
-}
 
 // 在每个project进行配置前调用，child project必须在root project中设置才会生效，root project必须在settings.gradle中设置才会生效
 gradle.beforeProject { proj ->
