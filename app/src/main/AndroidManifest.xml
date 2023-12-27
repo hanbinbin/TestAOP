@@ -32,7 +32,11 @@
 
         <activity android:name=".TestClassAPTActivity" />
 
-        <activity android:name=".TestASMActivity" />
+        <activity android:name=".TestASMActivity" >
+            <intent-filter>
+                <action android:name="com.test.asm" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".thread.ThreadTestActivity" />
 
@@ -41,6 +45,8 @@
         <activity android:name=".TestEditTextActivity" />
 
         <activity android:name=".SurfaceActivity" />
+
+        <service android:name=".service.NoticeService"/>
     </application>
 
 </manifest>

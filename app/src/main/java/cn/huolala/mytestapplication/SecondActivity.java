@@ -2,6 +2,10 @@ package cn.huolala.mytestapplication;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -22,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
@@ -52,6 +57,7 @@ import cn.huolala.mytestapplication.interceptor.AfterInterceptor;
 import cn.huolala.mytestapplication.interceptor.BeforeInterceptor;
 import cn.huolala.mytestapplication.interceptor.CatchInterceptor;
 import cn.huolala.mytestapplication.reference.TestReference;
+import cn.huolala.mytestapplication.service.NoticeService;
 import cn.huolala.mytestapplication.thread.ThreadUtils;
 import cn.huolala.mytestapplication.threadpool.WPFThreadPool;
 import cn.huolala.mytestapplication.utils.TelephoneNumberUtils;
@@ -70,6 +76,8 @@ import okhttp3.Response;
  * PS: Not easy to write code, please indicate.
  */
 public class SecondActivity extends AppCompatActivity {
+    private static final String ACTION = "com.test.asm";
+    public static final String EXTRA_DATA = "extra_data_second";
     private OkHttpClient okHttpClient;
     String language = "z" + "h";
     String country = "C" + "N";
@@ -100,6 +108,10 @@ public class SecondActivity extends AppCompatActivity {
 //            Log.e("SecondActivity", "str:" + str);
 //            Log.e("SecondActivity", "extra1:" + extra1);
 //            Log.e("SecondActivity", "extra2:" + extra2);
+        });
+
+        findViewById(R.id.notice).setOnClickListener(v -> {
+            createNotice(SecondActivity.this);
         });
 
         findViewById(R.id.input).setOnClickListener(v -> {
@@ -443,10 +455,10 @@ public class SecondActivity extends AppCompatActivity {
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-              if(i==j){
-                  Log.e("break", "start i = "+i);
-                break;
-              }
+                if (i == j) {
+                    Log.e("break", "start i = " + i);
+                    break;
+                }
             }
             Log.e("break", "end");
         }
@@ -708,5 +720,30 @@ public class SecondActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void createNotice(Context context) {
+        //获取通知管理实例
+        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        //8.0以后的通知渠道
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("important", "Important", NotificationManager.IMPORTANCE_HIGH);
+            assert manager != null;
+            manager.createNotificationChannel(channel);
+        }
+        //通知点击事项
+        Intent intent = new Intent(context, NoticeService.class);
+        intent.putExtra(EXTRA_DATA, "132362463477");
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "important")
+                .setContentTitle("收到一条通知")
+                .setContentText("你好")
+                .setSmallIcon(R.mipmap.ic_launcher)//通知图标
+                .setContentIntent(pendingIntent)//点击跳到通知详情
+                .setAutoCancel(true);//当点击通知后显示栏的通知不再显示
+        assert manager != null;
+        manager.notify(1, builder.build());
     }
 }

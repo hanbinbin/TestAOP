@@ -14,12 +14,22 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/notice"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/cardview_dark_background"
+                android:gravity="center"
+                android:text="创建通知"
+                android:textColor="@color/white" />
+
+            <TextView
                 android:id="@+id/output"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@color/cardview_dark_background"
                 android:gravity="center"
                 android:text="写入数据"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/white" />
 
             <TextView
